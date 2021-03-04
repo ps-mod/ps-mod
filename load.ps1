@@ -18,7 +18,7 @@ function Import-JustNopModul {
     $current = Get-Location
     if($url -notmatch '\.git$'){
         if($url -notmatch '.+[/\\].+'){
-            $url = "https://github.com/dombidav/$url.git"
+            $url = "https://github.com/ps-mod/$url.git"
         }
         else{
             $url = "https://github.com/$url.git"
