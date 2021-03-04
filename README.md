@@ -8,12 +8,19 @@ PS-Mod **DOES NOT INCLUDE** any security features at the moment. To use PS-Mod, 
 > **NEVER** run scripts unknown to you.
 
 Before installing/running any powershell script make sure you **know and understand** the content of the module.
+# Installation
+Open powershell as administrator and run the following command:
+```ps
+Set-ExecutionPolicy Bypass -Scope Process -Force ; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072 ;Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/ps-mod/ps-mod/main/install_ps-mod.ps1'))
+```
+You can review the installation script [here](https://github.com/ps-mod/ps-mod/blob/main/install_ps-mod.ps1).
+
 # Commands
 ## require
 Installs a PS-Mod module
 
 ### Syntax:
-```ps
+```
 psmod require <package or git url>
 ```
 ### Usage:
@@ -25,7 +32,7 @@ psmod require Laravel
 Uninstalls a PS-Mod module
 
 ### Syntax:
-```ps
+```
 psmod remove <package or git url>
 ```
 ### Usage:
@@ -49,7 +56,7 @@ Read the documentation of a specific module.
 | -r | Redirect | Return the path to README.md instead of README.md content
 
 ### Syntax:
-```ps
+```
 psmod read <module> [-r]
 ```
 
@@ -71,7 +78,7 @@ Open the repository of a specific module
 | -r | Redirect | Return the path to repository instead of opening it in the browser
 
 ### Syntax:
-```ps
+```
 psmod check <module> [-r]
 ```
 
@@ -96,7 +103,7 @@ psmod update
 Create a new empty package for you
 
 ### Syntax:
-```ps
+```
 psmod new <Package name>
 ```
 
@@ -108,4 +115,4 @@ psmod new MyPackage
 After you publish your repo on github.com anyone can include your package with the `psmod require MyUser/Mypackage` command.
 
 # Core Commands
-The core package is included with the main loader. See it's [README.md here]().
+The core package is included with the main loader. See it's [README.md here](https://github.com/ps-mod/ps-mod/tree/main/Core).
