@@ -1,6 +1,6 @@
 *
 !.gitignore
 !load.ps1
-!install_ps-mod.ps1
+!install.ps1
 !Core/
 !Core/*
