@@ -11,7 +11,7 @@ Before installing/running any powershell script make sure you **know and underst
 # Installation
 Open powershell as administrator and run the following command:
 ```ps
-Set-ExecutionPolicy Bypass -Scope Process -Force ; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072 ;Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/ps-mod/ps-mod/main/install_ps-mod.ps1'))
+Set-ExecutionPolicy Bypass -Scope Process -Force ; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072 ;Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/ps-mod/ps-mod/main/install.ps1'))
 ```
 You can review the installation script [here](https://github.com/ps-mod/ps-mod/blob/main/install_ps-mod.ps1).
 
