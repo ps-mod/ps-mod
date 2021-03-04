@@ -161,6 +161,3 @@ function psmod{
 New-Alias storm phpstorm64
 
 require Core
-require FileManagement
-require Laravel
-require Test-Powershell-Modul #https://github.com/dombidav/Test-Powershell-Modul.git
