@@ -1,0 +1,5 @@
+*
+!.gitignore
+!load.ps1
+!Core/
+!Core/*
