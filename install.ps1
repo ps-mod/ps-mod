@@ -1,4 +1,4 @@
-$path = "C:\tools"
+$path = "C:\tools\ps-mod"
 New-Item -Path $path -ItemType Directory -Force
 git clone https://github.com/ps-mod/ps-mod.git $path
 
