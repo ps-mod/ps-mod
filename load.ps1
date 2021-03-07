@@ -6,7 +6,7 @@ function require($path) {
     Import-Module $p
 }
 
-function Import-JustNopModul {
+function Import-PsModModul {
     param (
         [Parameter(Mandatory=$True)]
         [string]
@@ -31,7 +31,7 @@ function Import-JustNopModul {
         Set-Location $current
         return;
     }
-    Add-Content -Path "$Global:rootFolder/load.ps1" -Value "`r`nrequire $modulName #$url"
+    Add-Content -Path "$Global:rootFolder/modules.psm1" -Value "`r`nrequire $modulName #$url"
     if(Test-Path "$Global:rootFolder/$modulName/post_install.ps1"){
         Start-Process (Powershell.exe -File "$Global:rootFolder/$modulName/post_install.ps1") -NoNewWindow
     }
@@ -52,10 +52,10 @@ function Remove-JustNopModul {
     Set-Location $Global:rootFolder
     try {
         Remove-Item $name -r -Force -ErrorAction Stop
-        $content = Get-Content "$Global:rootFolder/load.ps1" | Where-Object {$_ -notmatch "require $name"}
-        Set-Content "$Global:rootFolder/load.ps1" $content
-        $Newtext = (Get-Content -Path "$Global:rootFolder/load.ps1" -Raw) -replace "(?s)`r`n\s*$"
-        [system.io.file]::WriteAllText("$Global:rootFolder/load.ps1",$Newtext)
+        $content = Get-Content "$Global:rootFolder/modules.psm1" | Where-Object {$_ -notmatch "require $name"}
+        Set-Content "$Global:rootFolder/modules.psm1" $content
+        $Newtext = (Get-Content -Path "$Global:rootFolder/modules.psm1" -Raw) -replace "(?s)`r`n\s*$"
+        [system.io.file]::WriteAllText("$Global:rootFolder/modules.psm1",$Newtext)
 
         Set-Location $current
         re
@@ -93,7 +93,7 @@ function psmod{
 
     if($innerFunc -eq 'list'){
         Set-Content -Path "$Global:rootFolder\out.csv" -Value "Module Name;Repository"
-        $a = Get-Content -Path "$Global:rootFolder\load.ps1" | Where-Object {$_ -match "require ([a-zA-Z.0-9-&]+) ?#?(.*)"} | ForEach-Object {
+        $a = Get-Content -Path "$Global:rootFolder\modules.psm1" | Where-Object {$_ -match "require ([a-zA-Z.0-9-&]+) ?#?(.*)"} | ForEach-Object {
             $regex = $_ | Select-String -Pattern "require ([a-zA-Z.0-9-&]+) ?#?(.*)"
             $moduleName = $regex.Matches.Groups[1].Value
             $git = 'Private'
@@ -115,7 +115,7 @@ function psmod{
         Get-Content -Path "$Global:rootFolder\$moduleName\README.md"
     }
     elseif ($innerFunc -eq 'check') {
-        $a = Get-Content -Path "$Global:rootFolder\load.ps1" | Where-Object {$_ -match "require $moduleName"}
+        $a = Get-Content -Path "$Global:rootFolder\modules.psm1" | Where-Object {$_ -match "require $moduleName"}
         $a = $a | Select-String -Pattern "require $moduleName #(.+)"
         if($a.Matches.Length -eq 0){
             if($redirect){
@@ -130,7 +130,7 @@ function psmod{
         }
         Start-Process $a
     }elseif ($innerFunc -eq 'require') {
-        Import-JustNopModul $moduleName
+        Import-PsModModul $moduleName
     }
     elseif ($innerFunc -eq 'remove') {
         Remove-JustNopModul $moduleName
@@ -151,15 +151,16 @@ function psmod{
     }
     elseif ($innerFunc -eq 'install') {
         Get-Content $moduleName | ForEach-Object {
-            Import-JustNopModul $_.ToString() -NoRestart
+            Import-PsModModul $_.ToString() -NoRestart
         }
         Read-Host "Press ENTER to restart Powershell"
         re
     }
 }
 
-New-Alias storm phpstorm64
-
 require Core
-
+if(Test-Path "$Global:rootFolder/modules.psm1")
+{
+    Import-Module "$Global:rootFolder/modules.psm1"
+}
 
