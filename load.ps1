@@ -17,7 +17,10 @@ function Run-Script {
         )][string[]]
         $params
     )
-    $path = "$Global:rootFolder/$innerFunc/$innerFunc.Script.ps1 "
+    if(!$innerFunc.Contains('/')){
+        $innerFunc = "$innerFunc/$innerFunc"
+    }
+    $path = "$Global:rootFolder/$innerFunc.Script.ps1 "
     if($params){
         Start-Process powershell -ArgumentList ($path + ($params -join " ")) -NoNewWindow -Wait
     }else{
