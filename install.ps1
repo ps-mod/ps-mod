@@ -1,4 +1,7 @@
 $path = "C:\tools\ps-mod"
+if($IsLinux){
+    $path = "~/tools/ps-mod"
+}
 $content = "`r`nImport-Module $path\load.ps1"
 New-Item -Path $path -ItemType Directory -Force
 git clone https://github.com/ps-mod/ps-mod.git $path
