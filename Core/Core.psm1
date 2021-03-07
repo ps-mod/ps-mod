@@ -1,14 +1,26 @@
 function re {
+    <#
+    .Synopsis
+        Restart Powershell here
+    #>
     Start-Process powershell -WorkingDirectory $PWD
     exit
 }
 
 function su {
+    <#
+    .Synopsis
+        Start an adminstrator powershell here and close this process
+    #>
     Start-Process powershell.exe -verb runAs -ArgumentList '-NoExit', '-Command', ('cd '+$pwd)
     exit
 }
 
 function services? {
+    <#
+    .Synopsis
+        List all running service
+    #>
     if(Test-Administrator){
         Get-Service | ConvertTo-HTML -Property Name, Status > ($Global:rootFolder + "\ps_services.html")
         Invoke-Item ($Global:rootFolder + "\ps_services.html")
@@ -20,12 +32,22 @@ function services? {
 }
 
 function Test-Administrator  
-{  
+{
+    <#
+    .Synopsis
+        Return true if current host process has administrator rights
+    #>
     $user = [Security.Principal.WindowsIdentity]::GetCurrent();
     (New-Object Security.Principal.WindowsPrincipal $user).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)  
 }
 
 function Import-Env {
+    <#
+    .Summary
+        Read an env file and return it as a hastable
+    .Parameter fileLocation
+        env file location
+    #>
     param (
         # Env File Location
         [Parameter(Mandatory=$true)]
@@ -49,6 +71,10 @@ function Import-Env {
 }
 
 function Export-Env {
+    <#
+    .Summary
+        Save a hashmap as an env file
+    #>
     param (
         # Env hash
         [Parameter(Mandatory=$true)]
