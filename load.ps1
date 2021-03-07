@@ -41,21 +41,23 @@ function psmod{
         $params
     )
 
-    if($innerFunction -in ('list', 'read', 'help', 'check', 'update', 'install')){
-        Run-Script "Core/$innerFunction" $params
-    }
-    elseif ($innerFunction -eq 'require') {
-        Import-Module "$Global:rootFolder/Core/ModuleManager.psm1"
-        Import-PsModModul $params[0]
-        Remove-Module ModuleManager
-    }
-    elseif ($innerFunction -eq 'remove') {
-        Import-Module "$Global:rootFolder/Core/ModuleManager.psm1"
-        Remove-PsModModul $params[0]
-        Remove-Module ModuleManager
-    }
-    else {
-        Run-Script $innerFunction $params
+    switch($innerFunction){
+        {$_ -in ('list', 'read', 'help', 'check', 'update', 'install')} {
+            Run-Script "Core/$innerFunction" $params
+        }
+        'require' {
+            Import-Module "$Global:rootFolder/Core/ModuleManager.psm1"
+            Import-PsModModul $params[0]
+            Remove-Module ModuleManager
+        }
+        'remove' {
+            Import-Module "$Global:rootFolder/Core/ModuleManager.psm1"
+            Remove-PsModModul $params[0]
+            Remove-Module ModuleManager
+        }
+        default {
+            Run-Script $innerFunction $params
+        }
     }
 }
 
