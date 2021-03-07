@@ -14,7 +14,5 @@ $profiles = (
 )
 
 $profiles | ForEach-Object {
-    if(Test-Path $_){
         Add-Content -Path ($_) -Value $content
-    }
 }
