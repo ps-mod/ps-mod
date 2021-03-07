@@ -162,4 +162,4 @@ New-Alias storm phpstorm64
 
 require Core
 
-require Laravel #https://github.com/ps-mod/Laravel.git
+
