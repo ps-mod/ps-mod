@@ -41,18 +41,7 @@ function psmod{
         $params
     )
 
-    if($innerFunction -eq 'list'){
-        Run-Script "Core/$innerFunction" $params
-    }elseif(($innerFunction -eq 'read') -or ($innerFunction -eq 'help')){
-        Run-Script "Core/$innerFunction" $params
-    }
-    elseif ($innerFunction -eq 'check') {
-        Run-Script "Core/$innerFunction" $params
-    }
-    elseif ($innerFunction -eq 'update') {
-        Run-Script "Core/$innerFunction" $params
-    }
-    elseif ($innerFunction -eq 'install') {
+    if($innerFunction -in ('list', 'read', 'help', 'check', 'update', 'install')){
         Run-Script "Core/$innerFunction" $params
     }
     elseif ($innerFunction -eq 'require') {
