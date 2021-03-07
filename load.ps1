@@ -17,7 +17,7 @@ function Run-Script {
         )][string[]]
         $params
     )
-    $innerFunc = $innerFunc.substring(0,1).toupper()+$innerFunc.substring(1).tolower()
+    Write-Host $innerFunc
     if(!$innerFunc.Contains('/')){
         $innerFunc = "$innerFunc/$innerFunc"
     }
@@ -27,7 +27,6 @@ function Run-Script {
         $path = $path + ($params -join " ")
     }
     if($IsLinux){
-        Clear-Host
         Start-Process pwsh -ArgumentList $path -NoNewWindow -Wait
     }
     elseif ($IsLinux -eq $false) {
@@ -52,6 +51,7 @@ function psmod{
 
     switch($innerFunction){
         {$_ -in ('list', 'read', 'help', 'check', 'update', 'install')} {
+            $innerFunction = $innerFunction.substring(0,1).toupper()+$innerFunction.substring(1).tolower()
             Run-Script "Core/$innerFunction" $params
         }
         'require' {
