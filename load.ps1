@@ -6,6 +6,25 @@ function require($path) {
     Import-Module $p
 }
 
+function Run-Script {
+    param(
+        [Parameter(Mandatory=$false, Position = 0)]
+        $innerFunc,
+        [Parameter(
+                Mandatory=$false,
+                ValueFromRemainingArguments=$true,
+                Position = 1
+        )][string[]]
+        $params
+    )
+    $path = "$Global:rootFolder/$innerFunc/$innerFunc.Script.ps1 "
+    if($params){
+        Start-Process powershell -ArgumentList ($path + ($params -join " ")) -NoNewWindow -Wait
+    }else{
+        Start-Process powershell -ArgumentList $path -NoNewWindow -Wait
+    }
+}
+
 function Import-PsModModul {
     param (
         [Parameter(Mandatory=$True)]
@@ -159,12 +178,7 @@ function psmod{
         re
     }
     else {
-        $path = "$Global:rootFolder/$innerFunc/$innerFunc.Script.ps1 "
-        if($params){
-            Start-Process powershell -ArgumentList ($path + ($params -join " ")) -NoNewWindow -Wait
-        }else{
-            Start-Process powershell -ArgumentList $path -NoNewWindow -Wait
-        }
+        Run-Script $innerFunc $params
     }
 }
 
