@@ -17,6 +17,7 @@ function Run-Script {
         )][string[]]
         $params
     )
+    $innerFunc = $innerFunc.substring(0,1).toupper()+$innerFunc.substring(1).tolower()
     if(!$innerFunc.Contains('/')){
         $innerFunc = "$innerFunc/$innerFunc"
     }
