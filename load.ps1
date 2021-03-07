@@ -23,8 +23,16 @@ function Run-Script {
     $path = "$Global:rootFolder/$innerFunc.Script.ps1 "
     $path = $path -replace '\\', '/'
     if($params){
-        Start-Process powershell -ArgumentList ($path + ($params -join " ")) -NoNewWindow -Wait
-    }else{
+        $path = $path + ($params -join " ")
+    }
+    if($IsLinux){
+        Clear-Host
+        Start-Process pwsh -ArgumentList $path -NoNewWindow -Wait
+    }
+    elseif ($IsLinux -eq $false) {
+        Start-Process pwsh -ArgumentList $path -NoNewWindow -Wait
+    }
+    else {
         Start-Process powershell -ArgumentList $path -NoNewWindow -Wait
     }
 }

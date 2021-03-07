@@ -3,7 +3,16 @@ function re {
     .Synopsis
         Restart Powershell here
     #>
+    if($IsLinux){
+        Clear-Host
+        Start-Process pwsh -WorkingDirectory $PWD -Wait
+    }
+    elseif ($IsLinux -eq $false) {
+        Start-Process pwsh -WorkingDirectory $PWD
+    }
+    else {
     Start-Process powershell -WorkingDirectory $PWD
+    }
     exit
 }
 
@@ -12,7 +21,16 @@ function su {
     .Synopsis
         Start an adminstrator powershell here and close this process
     #>
-    Start-Process powershell.exe -verb runAs -ArgumentList '-NoExit', '-Command', ('cd '+$pwd)
+    if($IsLinux){
+        Clear-Host
+        Start-Process sudo pwsh -WorkingDirectory $PWD -Wait
+    }
+    elseif ($IsLinux -eq $false) {
+        Start-Process pwsh -verb runAs -ArgumentList '-NoExit', '-Command', ('cd '+$pwd)
+    }
+    else {
+        Start-Process powershell.exe -verb runAs -ArgumentList '-NoExit', '-Command', ('cd '+$pwd)
+    }
     exit
 }
 
@@ -27,7 +45,7 @@ function services? {
         Start-Sleep -s 3
         Remove-Item ($Global:rootFolder + "\ps_services.html") -Force
     }else {
-        Start-Process powershell.exe -verb runAs -ArgumentList '-Command', 'services?'  
+        Write-Host 'This command need administrator rights'
     }
 }
 

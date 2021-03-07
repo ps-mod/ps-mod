@@ -1,6 +1,6 @@
 $path = "C:\tools\ps-mod"
 if($IsLinux){
-    $path = "~/tools/ps-mod"
+    $path = "$HOME/tools/ps-mod"
 }
 $content = "`r`nImport-Module $path\load.ps1"
 New-Item -Path $path -ItemType Directory -Force
@@ -14,5 +14,6 @@ $profiles = (
 )
 
 $profiles | ForEach-Object {
-        Add-Content -Path ($_) -Value $content
+    New-Item -Path (Split-Path -Path $_) -ItemType Directory -Force
+    Add-Content -Path ($_) -Value $content -Force
 }
