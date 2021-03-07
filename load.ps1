@@ -1,7 +1,7 @@
 $Global:rootFolder = $PSScriptRoot
 
 function require($path) {
-    $p = Join-Path -Path $PSScriptRoot -ChildPath $path
+    $p = Join-Path -Path $Global:rootFolder -ChildPath $path
     $p = Join-Path -Path $p -ChildPath ($path + ".psm1")
     Import-Module $p
 }
@@ -26,14 +26,14 @@ function Import-JustNopModul {
     }
     $regex = $url | Select-String -Pattern ".+\/(.+)\/([a-zA-Z-_0-9&]+)\.git"
     $modulName = $regex.Matches.Groups[2].Value
-    git clone $url "$PSScriptRoot/$modulName"
+    git clone $url "$Global:rootFolder/$modulName"
     if($LASTEXITCODE){
         Set-Location $current
         return;
     }
-    Add-Content -Path "$PSScriptRoot/load.ps1" -Value "`r`nrequire $modulName #$url"
-    if(Test-Path "$PSScriptRoot/$modulName/post_install.ps1"){
-        Start-Process (Powershell.exe -File "$PSScriptRoot/$modulName/post_install.ps1") -NoNewWindow
+    Add-Content -Path "$Global:rootFolder/load.ps1" -Value "`r`nrequire $modulName #$url"
+    if(Test-Path "$Global:rootFolder/$modulName/post_install.ps1"){
+        Start-Process (Powershell.exe -File "$Global:rootFolder/$modulName/post_install.ps1") -NoNewWindow
     }
     Set-Location $current
     if(!$NoRestart){
@@ -49,28 +49,28 @@ function Remove-JustNopModul {
     )
 
     $current = Get-Location
-    Set-Location $PSScriptRoot
+    Set-Location $Global:rootFolder
     try {
         Remove-Item $name -r -Force -ErrorAction Stop
-        $content = Get-Content "$PSScriptRoot/load.ps1" | Where-Object {$_ -notmatch "require $name"}
-        Set-Content "$PSScriptRoot/load.ps1" $content
-        $Newtext = (Get-Content -Path "$PSScriptRoot/load.ps1" -Raw) -replace "(?s)`r`n\s*$"
-        [system.io.file]::WriteAllText("$PSScriptRoot/load.ps1",$Newtext)
+        $content = Get-Content "$Global:rootFolder/load.ps1" | Where-Object {$_ -notmatch "require $name"}
+        Set-Content "$Global:rootFolder/load.ps1" $content
+        $Newtext = (Get-Content -Path "$Global:rootFolder/load.ps1" -Raw) -replace "(?s)`r`n\s*$"
+        [system.io.file]::WriteAllText("$Global:rootFolder/load.ps1",$Newtext)
 
         Set-Location $current
         re
     }
     catch {
         Write-Error (-join $Error)
-        if($PSScriptRoot -match ".*OneDrive.*"){
+        if($Global:rootFolder -match ".*OneDrive.*"){
             Write-Warning 'You are using OneDrive files-on-demand feature. While this is a pretty good feature, deleteing from powershell is disabled in shared folders for security reasons.'
-            Write-Warning "You can solve this by 1. Automatically or manually remove the `"require`" statement from your load.ps1 file, then 2. Remove the $PSScriptRoot/$name folder."
+            Write-Warning "You can solve this by 1. Automatically or manually remove the `"require`" statement from your load.ps1 file, then 2. Remove the $Global:rootFolder/$name folder."
             $decision = $Host.UI.PromptForChoice('Do you want to automatically remove the "require" statement from your load.ps1 file?', '', ('&Yes', '&No'), 0)
             if ($decision -eq 0) {
-                $content = Get-Content "$PSScriptRoot/load.ps1" | Where-Object {$_ -notmatch "require $name"}
-                Set-Content "$PSScriptRoot/load.ps1" $content
-                $Newtext = (Get-Content -Path "$PSScriptRoot/load.ps1" -Raw) -replace "(?s)`r`n\s*$"
-                [system.io.file]::WriteAllText("$PSScriptRoot/load.ps1",$Newtext)
+                $content = Get-Content "$Global:rootFolder/load.ps1" | Where-Object {$_ -notmatch "require $name"}
+                Set-Content "$Global:rootFolder/load.ps1" $content
+                $Newtext = (Get-Content -Path "$Global:rootFolder/load.ps1" -Raw) -replace "(?s)`r`n\s*$"
+                [system.io.file]::WriteAllText("$Global:rootFolder/load.ps1",$Newtext)
 
                 Write-Host "Now you can remove the module folder named $name" -ForegroundColor Green
                 explorer .
@@ -92,30 +92,30 @@ function psmod{
     )
 
     if($innerFunc -eq 'list'){
-        Set-Content -Path "$PSScriptRoot\out.csv" -Value "Module Name;Repository"
-        $a = Get-Content -Path "$PSScriptRoot\load.ps1" | Where-Object {$_ -match "require ([a-zA-Z.0-9-&]+) ?#?(.*)"} | ForEach-Object {
+        Set-Content -Path "$Global:rootFolder\out.csv" -Value "Module Name;Repository"
+        $a = Get-Content -Path "$Global:rootFolder\load.ps1" | Where-Object {$_ -match "require ([a-zA-Z.0-9-&]+) ?#?(.*)"} | ForEach-Object {
             $regex = $_ | Select-String -Pattern "require ([a-zA-Z.0-9-&]+) ?#?(.*)"
             $moduleName = $regex.Matches.Groups[1].Value
             $git = 'Private'
             if($regex.Matches.Groups.Count -gt 2){
                 $git = $regex.Matches.Groups[2].Value
             }
-            Add-Content -Path "$PSScriptRoot\out.csv" -Value "$moduleName;$git"
+            Add-Content -Path "$Global:rootFolder\out.csv" -Value "$moduleName;$git"
         }
 
-        Import-Csv "$PSScriptRoot\out.csv" -Delimiter ';' | Format-Table
-        Remove-Item "$PSScriptRoot\out.csv"
+        Import-Csv "$Global:rootFolder\out.csv" -Delimiter ';' | Format-Table
+        Remove-Item "$Global:rootFolder\out.csv"
     }elseif(($innerFunc -eq 'read') -or ($innerFunc -eq 'help')){
         if($redirect){
-            return "$PSscriptRoot\$moduleName\README.md"
+            return "$Global:rootFolder\$moduleName\README.md"
         }
 
         Write-Output "$moduleName README content"
         Write-Output "----------------------"
-        Get-Content -Path "$PSscriptRoot\$moduleName\README.md"
+        Get-Content -Path "$Global:rootFolder\$moduleName\README.md"
     }
     elseif ($innerFunc -eq 'check') {
-        $a = Get-Content -Path "$PSScriptRoot\load.ps1" | Where-Object {$_ -match "require $moduleName"}
+        $a = Get-Content -Path "$Global:rootFolder\load.ps1" | Where-Object {$_ -match "require $moduleName"}
         $a = $a | Select-String -Pattern "require $moduleName #(.+)"
         if($a.Matches.Length -eq 0){
             if($redirect){
@@ -138,7 +138,7 @@ function psmod{
     elseif ($innerFunc -eq 'update') {
         Write-Host "Updating modules..."
         Write-Output "==========================="
-        $dir = Get-ChildItem $PSScriptRoot | Where-Object {$_.PSIsContainer -and ($_.Name -notmatch '^\..+')}
+        $dir = Get-ChildItem $Global:rootFolder | Where-Object {$_.PSIsContainer -and ($_.Name -notmatch '^\..+')}
         $dir | ForEach-Object {
             Set-Location $_.FullName
             Write-Host $_.Name": " -NoNewline
@@ -161,3 +161,5 @@ function psmod{
 New-Alias storm phpstorm64
 
 require Core
+
+require Laravel #https://github.com/ps-mod/Laravel.git
