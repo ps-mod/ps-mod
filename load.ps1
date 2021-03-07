@@ -83,12 +83,14 @@ function Remove-JustNopModul {
 
 function psmod{
     param(
-        [Parameter(Mandatory=$false)]
+        [Parameter(Mandatory=$false, Position = 0)]
         $innerFunc,
-        [Parameter(Mandatory=$false)]
-        $moduleName,
-        [parameter(Mandatory=$false)]
-        [switch]$redirect = $false
+        [Parameter(
+                Mandatory=$false,
+                ValueFromRemainingArguments=$true,
+                Position = 1
+        )][string[]]
+        $params
     )
 
     if($innerFunc -eq 'list'){
@@ -106,7 +108,7 @@ function psmod{
         Import-Csv "$Global:rootFolder\out.csv" -Delimiter ';' | Format-Table
         Remove-Item "$Global:rootFolder\out.csv"
     }elseif(($innerFunc -eq 'read') -or ($innerFunc -eq 'help')){
-        if($redirect){
+        if($params.Contains('-r')){
             return "$Global:rootFolder\$moduleName\README.md"
         }
 
@@ -130,10 +132,10 @@ function psmod{
         }
         Start-Process $a
     }elseif ($innerFunc -eq 'require') {
-        Import-PsModModul $moduleName
+        Import-PsModModul $params[0]
     }
     elseif ($innerFunc -eq 'remove') {
-        Remove-JustNopModul $moduleName
+        Remove-JustNopModul $params[0]
     }
     elseif ($innerFunc -eq 'update') {
         Write-Host "Updating modules..."
@@ -150,11 +152,19 @@ function psmod{
         }
     }
     elseif ($innerFunc -eq 'install') {
-        Get-Content $moduleName | ForEach-Object {
+        Get-Content $params[0] | ForEach-Object {
             Import-PsModModul $_.ToString() -NoRestart
         }
         Read-Host "Press ENTER to restart Powershell"
         re
+    }
+    else {
+        $path = "$Global:rootFolder/$innerFunc/$innerFunc.Script.ps1 "
+        if($params){
+            Start-Process powershell -ArgumentList ($path + ($params -join " ")) -NoNewWindow -Wait
+        }else{
+            Start-Process powershell -ArgumentList $path -NoNewWindow -Wait
+        }
     }
 }
 
