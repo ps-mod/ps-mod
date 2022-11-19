@@ -6,7 +6,7 @@ function require($path) {
     Import-Module $p
 }
 
-function Run-Script {
+function Invoke-Script {
     param(
         [Parameter(Mandatory=$false, Position = 0)]
         $innerFunc,
@@ -52,7 +52,7 @@ function psmod{
     switch($innerFunction){
         {$_ -in ('list', 'read', 'help', 'check', 'update', 'install')} {
             $innerFunction = $innerFunction.substring(0,1).toupper()+$innerFunction.substring(1).tolower()
-            Run-Script "Core/$innerFunction" $params
+            Invoke-Script "Core/$innerFunction" $params
         }
         'require' {
             Import-Module "$Global:rootFolder/Core/ModuleManager.psm1"
@@ -65,7 +65,7 @@ function psmod{
             Remove-Module ModuleManager
         }
         default {
-            Run-Script $innerFunction $params
+            Invoke-Script $innerFunction $params
         }
     }
 }
