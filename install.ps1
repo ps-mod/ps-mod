@@ -5,7 +5,7 @@ Write-Warning '¤ This script does not need admin rights if you install PS-Mod t
 Write-Warning '¤ Ps-Mod cannot be uninstalled automatically. For uninstallation instructions, please see the README.md file'
 
 # Check if PS-Mod is already installed
-if(Test-Command 'psmod') {
+if(Get-Command 'psmod' -errorAction SilentlyContinue) {
     Write-Output '¤ PS-Mod is already installed'
     Write-Output '¤ Please uninstall it first'
     exit
