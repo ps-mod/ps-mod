@@ -4,6 +4,8 @@ Write-Output '¤ This script will install PS-Mod to your system'
 Write-Warning '¤ This script does not need admin rights if you install PS-Mod to your user profile only. If you want to install PS-Mod to the system, you need admin rights.'
 Write-Warning '¤ Ps-Mod cannot be uninstalled automatically. For uninstallation instructions, please see the README.md file'
 
+Read-Host '¤ Press any key to continue...'
+
 # Check if PS-Mod is already installed
 if(Get-Command 'psmod' -errorAction SilentlyContinue) {
     Write-Output '¤ PS-Mod is already installed'
